@@ -52,3 +52,71 @@ generate_cv_tags:
   topology_hints: true
   campus_fabric: true
 ```
+
+These options allow AVD to generate the metadata required for:
+
+- Campus topology rendering
+- CloudVision Network Hierarchy UI activation
+- Studio-based workflows
+
+---
+
+## CloudVision Network Hierarchy
+
+![Campus Network Hierarchy UI](images/topology/campus-network-hierarchy-ui.png)
+
+Figure 2 – CloudVision Network Hierarchy UI activated by Campus tags
+
+---
+
+## Campus Tag Variables
+
+AVD assigns CloudVision tags using fabric variables or node_type_keys.
+The following variables are supported for Campus deployments:
+
+| Variable                | Description                                       |
+| ----------------------- | ------------------------------------------------- |
+| `campus`                | Logical campus name                               |
+| `campus_pod`            | Building or campus pod                            |
+| `campus_access_pod`     | Access pod / IDF (not assigned to spines)         |
+| `cv_tags_topology_type` | Campus node type (`spine`, `leaf`, `member-leaf`) |
+
+---
+
+## Example: Fabric Tag Assignment
+
+L3 Spine Configuration
+
+```yaml
+l3spine:
+  defaults:
+    campus: AVD_CAMPUS
+    campus_pod: BUILDING_A
+  node_groups:
+    - group: SPINES
+      cv_tags_topology_type: spine
+```
+
+L2 Leaf Configuration
+
+```yaml
+l2leaf:
+  defaults:
+    campus: AVD_CAMPUS
+    campus_pod: BUILDING_A
+  node_groups:
+    - group: IDF1
+      cv_tags_topology_type: leaf
+      campus_access_pod: IDF1
+    - group: IDF2
+      cv_tags_topology_type: leaf
+      campus_access_pod: IDF2
+    - group: IDF3
+      cv_tags_topology_type: leaf
+      campus_access_pod: IDF3
+    - group: IDF3_3C
+      cv_tags_topology_type: member-leaf
+      campus_access_pod: IDF3
+```
+
+---
