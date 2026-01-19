@@ -120,3 +120,11 @@ l2leaf:
 ```
 
 ---
+
+## CloudVision Tags Applied to Devices
+
+![Campus Generagted CV Tags](images/topology/campus-generated-cv-tags.png)
+
+Figure 3 – CloudVision device view showing AVD-generated Campus tags
+
+---
