@@ -245,3 +245,51 @@ When deploying or adding new root containers, the `cv_deploy` role places all AV
 This automated behavior may reorder containers that were manually arranged in the UI.
 
 ---
+
+## Configlet Inheritance Example
+
+This section illustrates how **AVD manages configlets** and how those configlets are inherited by devices through a **Static Configuration Studio container hierarchy**.
+
+The workflow is as follows:
+
+1. AVD references a raw `.cfg` configlet file from the repository.
+2. The configlet is declared in the `configlets` section of the Static Studio manifest.
+3. The configlet is associated with the appropriate container in the manifest hierarchy.
+4. CloudVision applies the configlet to all devices that match the container’s tag query.
+
+---
+
+### AVD Configlet Declaration in the Manifest
+
+![AVD Code Configlet Into Manifest](images/cloudvision/campus-avd-configlet.png)
+
+AVD references the raw configuration file and includes it in the manifest so it can be managed by CloudVision.
+
+---
+
+### Configlet Deployed to the CloudVision Library
+
+![Configlet Applied Into CV Library](images/cloudvision/campus-configlet-library.png)
+
+During the `cv_deploy` phase, AVD uploads the configlet into the CloudVision Configlet Library.
+
+---
+
+### Configlet Associated with the Studio Container
+
+![Configlet Associated to Container](images/cloudvision/campus-configlet-applied-container.png)
+
+The configlet is attached to a Static Studio container.  
+All devices assigned to this container automatically inherit the configlet.
+
+---
+
+## Summary
+
+By combining:
+
+- AVD-generated CloudVision Campus tags
+- Static Studio manifests
+- Tag-based container placement
+
+You gain a scalable, deterministic, and supportable integration between AVD and CloudVision Studios, while maintaining clear ownership boundaries between build-time automation and day-2 operations.
