@@ -63,7 +63,7 @@ These options allow AVD to generate the metadata required for:
 
 ## CloudVision Network Hierarchy
 
-![Campus Network Hierarchy UI](images/topology/campus-network-hierarchy-ui.png)
+![Campus Network Hierarchy UI](images/cloudvision/campus-network-hierarchy-ui.png)
 
 Figure 2 – CloudVision Network Hierarchy UI activated by Campus tags
 
@@ -123,7 +123,7 @@ l2leaf:
 
 ## CloudVision Tags Applied to Devices
 
-![Campus Generagted CV Tags](images/topology/campus-generated-cv-tags.png)
+![Campus Generagted CV Tags](images/cloudvision/campus-generated-cv-tags.png)
 
 Figure 3 – CloudVision device view showing AVD-generated Campus tags
 
@@ -183,7 +183,7 @@ cv_static_config_manifest:
 
  ## Static Studio Container Hierarchy
 
-![Campus Studio Container Hierarchy](images/topology/campus-studio-container-hierarchy.png)
+![Campus Studio Container Hierarchy](images/cloudvision/campus-studio-container-hierarchy.png)
 
 Figure 4 – Static Configuration Studio containers built from tag queries
 
