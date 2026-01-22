@@ -1,11 +1,22 @@
-# AVD Generating CloudVision Campus Tags and Static Studios
+# Using AVD-Generated CloudVision Campus Tags with Static Studios
 
-This guide demonstrates how **Arista AVD** can automatically generate **CloudVision Campus Tags** and how those tags can be consumed by a **Static Configuration Studio** using a `config_manifest`.
+When deploying Campus fabrics with Arista AVD, a common challenge is determining how to cleanly integrate **build-time automation** with **CloudVision Studios–based day-2 operations**.
 
-This workflow enables a hybrid Campus operating model where:
+This repository documents a real-world, customer-inspired workflow that uses **AVD-generated CloudVision Campus tags** as the contract between these two domains.
 
-- **AVD** builds and maintains the campus fabric and infrastructure
-- **CloudVision Studios** are leveraged for topology visualization and day-2 operations
+By generating and applying Campus tags directly from AVD, CloudVision can:
+
+- Render accurate Campus topology views
+- Dynamically place devices into Studio container hierarchies
+- Enable clean configlet inheritance without device-level assignments
+- Support a hybrid operational model where AVD and Studios coexist
+
+In this model:
+
+- **AVD** is responsible for building and maintaining the Campus fabric and infrastructure
+- **CloudVision Studios** are leveraged for topology visualization, container-based configuration, and ongoing day-2 operations
+
+This guide walks through the architecture, tag generation, Studio container hierarchy, and configlet inheritance model using screenshots from a working lab environment.
 
 ---
 
