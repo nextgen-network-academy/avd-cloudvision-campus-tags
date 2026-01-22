@@ -1,3 +1,7 @@
+> **Audience:** Campus Network Operators & Automation Engineers  
+> **Scope:** Day-1 (AVD) + Day-2 (CloudVision Operations)  
+> **Validated on:** CVaaS / CloudVision 2024.3+
+
 # Using AVD-Generated CloudVision Campus Tags with Static Studios
 
 When deploying Campus fabrics with Arista AVD, a common challenge is determining how to cleanly integrate **build-time automation** with **CloudVision Studios–based day-2 operations**.
@@ -392,3 +396,6 @@ This workflow ensures:
 - Quick Actions provide safe, repeatable workflows for operators
 
 This separation allows infrastructure teams to maintain strong automation discipline while empowering operations teams with the flexibility required for daily campus management.
+
+> **Note**  
+> This repository represents personal lab work and reference material and is not official Arista documentation.
