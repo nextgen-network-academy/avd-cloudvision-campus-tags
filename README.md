@@ -333,17 +333,17 @@ From this view, operators can quickly pivot from monitoring to action without na
 
 ### Navigating the Network Hierarchy
 
-From the Campus Health Overview, operators can access the **Network Hierarchy UI**, which represents the logical campus structure built using **CloudVision Campus tags and containers**.
+From the **Campus Health Overview**, operators can navigate to the **Network Hierarchy UI**, which represents the logical campus structure built using **AVD-generated CloudVision Campus tags and containers**.
 
 The Network Hierarchy enables operators to:
 
-- View sites, buildings, floors, and logical groupings
-- Understand inherited configuration and policy scope
-- Target operational changes precisely
+- View sites, buildings, floors, and other logical groupings
+- Understand configuration and policy inheritance scopes
+- Target operational changes with precision and confidence
 
-The users can access Quick Actions menus on a per-container basis depicated from the tag hierarchy.
+Quick Actions menus are accessible **per container**, directly reflecting the underlying **tag-based hierarchy** created during Day-1 deployment.
 
-The UI provide a front view on the swotch panel where users have the option single or multi-select switchports to assign to port profiles
+Within the Quick Actions workflow, the UI presents a **front-panel view of the switch**, allowing operators to **single-select or multi-select switchports** and assign them to predefined port profiles.
 
 ![Campus Network Hierarchy Quick Actions](images/day2/campus-net-ui-quickactions-pp.png)
 
