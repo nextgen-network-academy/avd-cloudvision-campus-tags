@@ -380,7 +380,7 @@ This workflow ensures:
 
 <!-- Image: Quick Actions Port Profile Selection -->
 
-![Quick Actions Port Profile](images/cloudvision/campus-quick-actions-port-profile.png)
+![Quick Actions Port Profile](images/day2/campus-quick-actions-port-profile.png)
 
 ---
 
