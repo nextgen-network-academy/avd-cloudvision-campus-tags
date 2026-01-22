@@ -304,3 +304,91 @@ By combining:
 - Tag-based container placement
 
 You gain a scalable, deterministic, and supportable integration between AVD and CloudVision Studios, while maintaining clear ownership boundaries between build-time automation and day-2 operations.
+
+## Day-2 Operations (CloudVision Campus)
+
+This section focuses on **Day-2 operational workflows** using the **CloudVision Campus UI**, with emphasis on how network operators interact with the platform *after* Day-1 provisioning has been completed by AVD.
+
+Unlike Day-1 automation, where AVD is the source of truth, Day-2 operations leverage **CloudVision Studios, Network Hierarchy, and Quick Actions** to safely make operational changes at scale.
+
+---
+
+### Entry Point: Campus Health Overview
+
+For network operators assigned a **Campus profile**, the default landing page after logging into CloudVision is the **Campus Health Overview** dashboard.
+
+This dashboard provides:
+
+- High-level campus health status
+- Visibility into wired and wireless domains
+- Direct navigation into Campus-specific operational workflows
+
+<!-- Image: Campus Health Overview Dashboard -->
+
+![Campus Health Quick Actions](images/day2/campus-health-quickactions-pp.png)
+
+From this view, operators can quickly pivot from monitoring to action without navigating away from the Campus workflow context.
+
+---
+
+### Navigating the Network Hierarchy
+
+From the Campus Health Overview, operators can access the **Network Hierarchy UI**, which represents the logical campus structure built using **CloudVision Campus tags and containers**.
+
+The Network Hierarchy enables operators to:
+
+- View sites, buildings, floors, and logical groupings
+- Understand inherited configuration and policy scope
+- Target operational changes precisely
+
+The users can access Quick Actions menus on a per-container basis depicated from the tag hierarchy.
+
+The UI provide a front view on the swotch panel where users have the option single or multi-select switchports to assign to port profiles
+
+![Campus Network Hierarchy Quick Actions](images/day2/campus-net-ui-quickactions-pp.png)
+
+Because configuration and policies are associated at the container level, hierarchy placement directly determines what devices inherit.
+
+---
+
+### Quick Actions: Operational Changes at Scale
+
+Within the Campus workflow, operators can launch **Quick Actions** directly from the Campus dashboards or Network Hierarchy views.
+
+One of the most common Day-2 use cases is **setting or updating switch port profiles**.
+
+Quick Actions allow operators to:
+
+- Select one or more devices or ports
+- Apply predefined port profiles
+- Execute changes without modifying AVD source files
+
+### Example: Applying Switch Port Profiles
+
+Using Quick Actions, an operator can:
+
+1. Select a container, device, or specific interfaces
+2. Choose the appropriate **Switch Port Profile**
+3. Review the proposed change
+4. Execute the action through CloudVision
+
+This workflow ensures:
+
+- Consistency across the campus
+- Reduced operational risk
+- Fast response to Day-2 requirements
+
+<!-- Image: Quick Actions Port Profile Selection -->
+
+![Quick Actions Port Profile](images/cloudvision/campus-quick-actions-port-profile.png)
+
+---
+
+### Key Takeaways for Day-2 Operations
+
+- **AVD remains the Day-1 source of truth**
+- **CloudVision enables controlled Day-2 changes**
+- Network Hierarchy and tags define operational scope
+- Quick Actions provide safe, repeatable workflows for operators
+
+This separation allows infrastructure teams to maintain strong automation discipline while empowering operations teams with the flexibility required for daily campus management.
