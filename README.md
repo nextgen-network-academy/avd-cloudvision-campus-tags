@@ -1,8 +1,8 @@
+# Using AVD-Generated CloudVision Campus Tags with Static Studios
+
 > **Audience:** Campus Network Operators & Automation Engineers  
 > **Scope:** Day-1 (AVD) + Day-2 (CloudVision Operations)  
 > **Validated on:** CVaaS / CloudVision 2024.3+
-
-# Using AVD-Generated CloudVision Campus Tags with Static Studios
 
 When deploying Campus fabrics with Arista AVD, a common challenge is determining how to cleanly integrate **build-time automation** with **CloudVision Studios–based day-2 operations**.
 
@@ -196,7 +196,7 @@ cv_static_config_manifest:
 
 ---
 
- ## Static Studio Container Hierarchy
+## Static Studio Container Hierarchy
 
 ![Campus Studio Container Hierarchy](images/cloudvision/campus-studio-container-hierarchy.png)
 
@@ -397,5 +397,10 @@ This workflow ensures:
 
 This separation allows infrastructure teams to maintain strong automation discipline while empowering operations teams with the flexibility required for daily campus management.
 
-> **Note**  
-> This repository represents personal lab work and reference material and is not official Arista documentation.
+---
+
+## About This Repository
+
+This repository contains personal lab work and reference material created to explore hybrid AVD and CloudVision Campus workflows.  
+
+It is not official Arista documentation or a supported design guide.
