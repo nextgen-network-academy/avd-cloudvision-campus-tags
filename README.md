@@ -56,6 +56,9 @@ This functionality is supported on:
 - Static Configuration Studio Deployment:  
   <https://avd.arista.com/5.7/ansible_collections/arista/avd/roles/cv_deploy/index.html#static-configuration-studio-deployment>
 
+- Access Interface Configuration Studio (Quick Actions):  
+  <https://www.arista.io/help/articles/provisioning-studios-built-in-access-interface#access-interface-configuration-studio>
+  
 ---
 
 ## Enabling CloudVision Tag Generation
@@ -315,6 +318,9 @@ You gain a scalable, deterministic, and supportable integration between AVD and 
 This section focuses on **Day-2 operational workflows** using the **CloudVision Campus UI**, with emphasis on how network operators interact with the platform *after* Day-1 provisioning has been completed by AVD.
 
 Unlike Day-1 automation, where AVD is the source of truth, Day-2 operations leverage **CloudVision Studios, Network Hierarchy, and Quick Actions** to safely make operational changes at scale.
+
+- Access Interface Configuration Studio (Quick Actions):  
+  <https://www.arista.io/help/articles/provisioning-studios-built-in-access-interface#access-interface-configuration-studio>
 
 ---
 
