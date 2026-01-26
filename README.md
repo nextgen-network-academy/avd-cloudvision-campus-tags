@@ -207,40 +207,41 @@ Figure 4 – Static Configuration Studio containers built from tag queries
 ## Deploying the Manifest with `cv_deploy`
 
 ```yaml
-- name: Deploy CloudVision configuration
-  ansible.builtin.import_role:
-    name: arista.avd.cv_deploy
-  vars:
-
-    cv_static_config_manifest:
-      configlets:
-        - name: "Building_A_Banner"
-          file: configlets/Building_A_Banner.cfg
-      containers:
-        - name: ZZZ_AVD_CAMPUS
-            description: "AVD generated Campus Tag Heiarchy"
-            tag_query: "Campus:AVD_CAMPUS"
-            match_policy: "match_all"
-            sub_containers:
-            - name: BUILDING_A
-                description: "Build A"
-                tag_query: "Campus-Pod:BUILDING_A"
-                match_policy: "match_all"
-                configlets:
-                - name: "Building_A_Banner"
-                sub_containers:
-                - name: IDF1
-                    description: "IDF 1"
-                    tag_query: "Access-Pod:IDF1"
-                    match_policy: "match_all"
-                - name: IDF2
-                    description: "IDF 2"
-                    tag_query: "Access-Pod:IDF1"
-                    match_policy: "match_all"
-                - name: IDF3
-                    description: "IDF 3"
-                    tag_query: "Access-Pod:IDF1"
-                    match_policy: "match_all"
+tasks:
+  - name: Deploy CloudVision configuration
+    ansible.builtin.import_role:
+      name: arista.avd.cv_deploy
+    vars:
+      ## Deploy full hierarchy of containers and configlets into CloudVision “Static Configuration Studio”
+      cv_static_config_manifest:
+        configlets:
+          - name: "Building_A_Banner"
+            file: configlets/Building_A_Banner.cfg
+        containers:
+          - name: ZZZ_AVD_CAMPUS
+              description: "AVD generated Campus Tag Heiarchy"
+              tag_query: "Campus:AVD_CAMPUS"
+              match_policy: "match_all"
+              sub_containers:
+              - name: BUILDING_A
+                  description: "Build A"
+                  tag_query: "Campus-Pod:BUILDING_A"
+                  match_policy: "match_all"
+                  configlets:
+                  - name: "Building_A_Banner"
+                  sub_containers:
+                  - name: IDF1
+                      description: "IDF 1"
+                      tag_query: "Access-Pod:IDF1"
+                      match_policy: "match_all"
+                  - name: IDF2
+                      description: "IDF 2"
+                      tag_query: "Access-Pod:IDF1"
+                      match_policy: "match_all"
+                  - name: IDF3
+                      description: "IDF 3"
+                      tag_query: "Access-Pod:IDF1"
+                      match_policy: "match_all"
 ```
 
 AVD performs the following actions:
