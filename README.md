@@ -4,7 +4,13 @@
 > **Scope:** Day-1 (AVD) + Day-2 (CloudVision Operations)  
 > **Validated on:** CVaaS / CloudVision 2024.3+
 
-When deploying Campus fabrics with Arista AVD, a common challenge is determining how to cleanly integrate **build-time automation** with **CloudVision Studios–based day-2 operations**.
+> **TL;DR**  
+> This repository documents a practical Campus workflow where **AVD-generated CloudVision Campus tags** act as the integration point between **Day-1 automation** and **Day-2 operations**.  
+>
+> AVD builds and maintains the campus fabric, while CloudVision consumes those tags to drive **Campus topology, Network Hierarchy, Static Studios, and Quick Actions**, enabling operators to safely manage port profiles and operational changes through the UI without breaking automation intent.
+
+When deploying Campus fabrics with Arista AVD, a common challenge is determining how to cleanly integrate...
+
 
 This repository documents a real-world, customer-inspired workflow that uses **AVD-generated CloudVision Campus tags** as the contract between these two domains.
 
