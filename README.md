@@ -1,419 +1,232 @@
-# Using AVD-Generated CloudVision Campus Tags with Static Studios
+# AVD + CloudVision Campus Tags
 
-> **Audience:** Campus Network Operators & Automation Engineers  
-> **Scope:** Day-1 (AVD) + Day-2 (CloudVision Operations)  
-> **Validated on:** CVaaS / CloudVision 2024.3+
+> `// gitops · avd · cvaas · ansible · yaml`
 
-> **TL;DR**  
-> This repository documents a practical Campus workflow where **AVD-generated CloudVision Campus tags** act as the integration point between **Day-1 automation** and **Day-2 operations**.  
->
-> AVD builds and maintains the campus fabric, while CloudVision consumes those tags to drive **Campus topology, Network Hierarchy, Static Studios, and Quick Actions**, enabling operators to safely manage port profiles and operational changes through the UI without breaking automation intent.
-
-When deploying Campus fabrics with Arista AVD, a common challenge is determining how to cleanly integrate...
-
-
-This repository documents a real-world, customer-inspired workflow that uses **AVD-generated CloudVision Campus tags** as the contract between these two domains.
-
-By generating and applying Campus tags directly from AVD, CloudVision can:
-
-- Render accurate Campus topology views
-- Dynamically place devices into Studio container hierarchies
-- Enable clean configlet inheritance without device-level assignments
-- Support a hybrid operational model where AVD and Studios coexist
-
-In this model:
-
-- **AVD** is responsible for building and maintaining the Campus fabric and infrastructure
-- **CloudVision Studios** are leveraged for topology visualization, container-based configuration, and ongoing day-2 operations
-
-This guide walks through the architecture, tag generation, Studio container hierarchy, and configlet inheritance model using screenshots from a working lab environment.
-
----
-
-## High-Level Architecture
-
-![Campus Topology Overview](images/topology/campus-topology-overview.png)
-
-Figure 1 – Campus fabric topology generated and tagged by AVD
+**Difficulty:** ▓▓▓░░ Intermediate  
+**Time:** ~45 minutes  
+**Published:** April 2026
 
 ---
 
 ## Overview
 
-The `arista.avd.eos_designs` role can generate **CloudVision Tags** that are applied to devices and interfaces during fabric deployment. These tags are used by CloudVision to:
+Most teams treat Arista AVD and CloudVision Studios like they live in separate worlds. AVD owns Day-1 automation. CloudVision Studios is where operators live for Day-2. Without a clear contract between them, you end up with two teams stepping on each other.
 
-- Render accurate **Campus Topology views**
-- Enable **tag-based searches and filters**
-- Dynamically place devices into **Studio container hierarchies**
-- Support **hybrid AVD + Studios workflows**
+CloudVision Campus Tags are that contract.
 
-This functionality is supported on:
+When AVD generates and applies Campus Tags during fabric deployment, CloudVision can:
 
-- **CloudVision as a Service (CVaaS)**
-- **On-prem CloudVision 2024.3.0 or later**
+- Render accurate campus topology views automatically
+- Build Studio container hierarchies by tag query — no manual drag-and-drop
+- Apply configlets to whole containers, not individual devices
+- Enable Quick Actions so operators can safely make Day-2 port changes
+
+This guide walks through the full workflow — from AVD fabric variables to a working CloudVision Static Studio manifest.
 
 ---
 
-## Documentation References
+## Prerequisites
 
-- CloudVision Tags (AVD):  
-  <https://avd.arista.com/5.7/ansible_collections/arista/avd/roles/eos_designs/docs/how-to/cloudvision-tags.html>
+| Requirement | Version |
+|-------------|---------|
+| Arista AVD collection | `4.x+` |
+| Ansible | `2.15+` |
+| CloudVision as a Service (CVaaS) | Current |
+| Python | `3.10+` |
 
-- Static Configuration Studio Deployment:  
-  <https://avd.arista.com/5.7/ansible_collections/arista/avd/roles/cv_deploy/index.html#static-configuration-studio-deployment>
+```bash
+# Install AVD collection
+ansible-galaxy collection install arista.avd
 
-- Access Interface Configuration Studio (Quick Actions):  
-  <https://www.arista.io/help/articles/provisioning-studios-built-in-access-interface#access-interface-configuration-studio>
-  
+# Verify
+ansible-galaxy collection list | grep arista.avd
+```
+
 ---
 
-## Enabling CloudVision Tag Generation
+## The Problem in Plain Terms
 
-To globally enable CloudVision tag generation for Campus fabrics, both of the following settings must be enabled:
+Here's what happens without Campus Tags:
 
-```yaml
+AVD deploys your campus fabric. Configs are pushed. Everything looks correct in EOS. But then an operator logs into CloudVision to make a Day-2 port change — and Studios doesn't know which devices belong to which campus, which building, or which IDF.
+
+They have two options: edit the YAML source files (dangerous if they don't understand AVD), or try to manually assign devices in Studio containers (which AVD will overwrite on the next deploy).
+
+Campus Tags eliminate both problems.
+
+---
+
+## Architecture
+
+```
+AVD fabric variables
+  ↓ generate_cv_tags: true
+AVD generates 4 tags per device
+  ↓ cv_deploy playbook
+Tags applied to devices in CloudVision
+  ↓ tag queries
+Studio container hierarchy built automatically
+  ↓
+Operators manage Day-2 changes safely in CloudVision UI
+```
+
+---
+
+## Step 1 — Enable Campus Tag Generation
+
+In your AVD fabric variables file, add the `generate_cv_tags` block:
+
+```yaml title="group_vars/CAMPUS_FABRIC.yml"
+# Campus fabric topology
+campus_fabric_name: CAMPUS_FABRIC
+
+# Enable CloudVision Campus Tag generation
 generate_cv_tags:
   topology_hints: true
   campus_fabric: true
 ```
 
-These options allow AVD to generate the metadata required for:
-
-- Campus topology rendering
-- CloudVision Network Hierarchy UI activation
-- Studio-based workflows
+!!! tip "What these flags do"
+    `topology_hints: true` generates device role tags (`cv_tags_topology_type`).
+    `campus_fabric: true` generates campus hierarchy tags (`campus`, `campus_pod`, `campus_access_pod`).
 
 ---
 
-## CloudVision Network Hierarchy
+## Step 2 — Understand the Four Tags
 
-![Campus Network Hierarchy UI](images/cloudvision/campus-network-hierarchy-ui.png)
+AVD stamps four tags on every device in the fabric:
 
-Figure 2 – CloudVision Network Hierarchy UI activated by Campus tags
+| Tag | Example Value | Applied To |
+|-----|---------------|------------|
+| `campus` | `MAIN_CAMPUS` | All devices |
+| `campus_pod` | `BUILDING_A` | All devices |
+| `campus_access_pod` | `IDF_1A` | Access switches only |
+| `cv_tags_topology_type` | `spine` / `leaf` / `member-leaf` | All devices |
 
----
-
-## Campus Tag Variables
-
-AVD assigns CloudVision tags using fabric variables or node_type_keys.
-The following variables are supported for Campus deployments:
-
-| Variable                | Description                                       |
-| ----------------------- | ------------------------------------------------- |
-| `campus`                | Logical campus name                               |
-| `campus_pod`            | Building or campus pod                            |
-| `campus_access_pod`     | Access pod / IDF (not assigned to spines)         |
-| `cv_tags_topology_type` | Campus node type (`spine`, `leaf`, `member-leaf`) |
+!!! note "Access pod tag"
+    `campus_access_pod` is intentionally not applied to spine switches — only to leaf and member-leaf devices that represent physical IDFs.
 
 ---
 
-## Example: Fabric Tag Assignment
+## Step 3 — Define the Static Studio Manifest
 
-L3 Spine Configuration
+The `cv_static_config_manifest` tells CloudVision how to build your Studio container hierarchy using those tags as queries.
 
-```yaml
-l3spine:
-  defaults:
-    campus: AVD_CAMPUS
-    campus_pod: BUILDING_A
-  node_groups:
-    - group: SPINES
-      cv_tags_topology_type: spine
-```
-
-L2 Leaf Configuration
-
-```yaml
-l2leaf:
-  defaults:
-    campus: AVD_CAMPUS
-    campus_pod: BUILDING_A
-  node_groups:
-    - group: IDF1
-      cv_tags_topology_type: leaf
-      campus_access_pod: IDF1
-    - group: IDF2
-      cv_tags_topology_type: leaf
-      campus_access_pod: IDF2
-    - group: IDF3
-      cv_tags_topology_type: leaf
-      campus_access_pod: IDF3
-    - group: IDF3_3C
-      cv_tags_topology_type: member-leaf
-      campus_access_pod: IDF3
-```
-
----
-
-## CloudVision Tags Applied to Devices
-
-![Campus Generagted CV Tags](images/cloudvision/campus-generated-cv-tags.png)
-
-Figure 3 – CloudVision device view showing AVD-generated Campus tags
-
----
-
-## Static Configuration Studio Using a Config Manifest
-
-A Static Configuration Studio can consume the CloudVision tags generated by AVD using a cv_static_config_manifest.
-
-The manifest:
-
-- Reads tags applied by arista.avd.eos_designs
-- Uses tag_query expressions to dynamically place devices
-- Builds a container hierarchy based on Campus structure
-- Applies configlets to containers and inherited devices
-
----
-
-## Example Static Config Manifest
-
-```yaml
+```yaml title="group_vars/CAMPUS_FABRIC.yml"
 cv_static_config_manifest:
-  configlets:
-    - name: Building_A_Banner
-      file: configlets/Building_A_Banner.cfg
-
+  name: "CAMPUS_FABRIC_MANIFEST"
+  description: "AVD-generated campus fabric manifest"
   containers:
-    - name: ZZZ_AVD_CAMPUS
-      description: AVD generated Campus Tag Hierarchy
-      tag_query: "Campus:AVD_CAMPUS"
-      match_policy: match_all
+    - name: "{{ campus_fabric_name }}"
+      tag_query: "campus:{{ campus_name }}"
+      containers:
+        - name: "{{ campus_pod }}"
+          tag_query: "campus_pod:{{ campus_pod_name }}"
+          containers:
+            - name: "{{ campus_access_pod }}"
+              tag_query: "campus_access_pod:{{ campus_access_pod_name }}"
+```
 
-      sub_containers:
-        - name: BUILDING_A
-          description: Building A
-          tag_query: "Campus-Pod:BUILDING_A"
-          match_policy: match_all
-          configlets:
-            - name: Building_A_Banner
+!!! warning "Container naming"
+    Container names in the manifest must match exactly what AVD generates as tag values. Mismatches result in devices not being placed — check your `group_vars` topology definitions carefully.
 
-          sub_containers:
-            - name: IDF1
-              description: IDF 1
-              tag_query: "Access-Pod:IDF1"
-              match_policy: match_all
-            - name: IDF2
-              description: IDF 2
-              tag_query: "Access-Pod:IDF2"
-              match_policy: match_all
-            - name: IDF3
-              description: IDF 3
-              tag_query: "Access-Pod:IDF3"
-              match_policy: match_all
+---
+
+## Step 4 — Run the Deployment
+
+```bash
+# Build configs and generate tags
+ansible-playbook playbooks/build.yml
+
+# Deploy to CloudVision — this pushes configs AND applies tags
+ansible-playbook playbooks/deploy_campus.yml
+```
+
+Expected output:
+
+```
+PLAY [Deploy AVD Campus Fabric + CloudVision Tags] ************************
+
+TASK [arista.avd.eos_designs] ............................................. ok
+TASK [arista.avd.eos_config_deploy_cvp] ................................... ok
+TASK [arista.avd.cv_deploy] ............................................... ok
+
+PLAY RECAP ****************************************************************
+SPINE1   : ok=3  changed=1  unreachable=0  failed=0
+IDF1     : ok=3  changed=1  unreachable=0  failed=0
+IDF2     : ok=3  changed=1  unreachable=0  failed=0
+IDF3     : ok=3  changed=1  unreachable=0  failed=0
 ```
 
 ---
 
-## Static Studio Container Hierarchy
+## Step 5 — Validate in CloudVision
 
-![Campus Studio Container Hierarchy](images/cloudvision/campus-studio-container-hierarchy.png)
+After deployment, log into CVaaS and verify:
 
-Figure 4 – Static Configuration Studio containers built from tag queries
+**Campus Topology view:**
+Navigate to **Network → Campus** — you should see your campus rendered with correct spine/leaf hierarchy.
+
+**Studio containers:**
+Navigate to **Studios → Static Config** — containers should be populated with devices placed by tag query, not manually assigned.
+
+**Device tags:**
+Select any device → **Tags** tab — confirm all four Campus tags are present with correct values.
 
 ---
 
-## Deploying the Manifest with `cv_deploy`
+## The Day-2 Result
 
-```yaml
-tasks:
-  - name: Deploy CloudVision configuration
-    ansible.builtin.import_role:
-      name: arista.avd.cv_deploy
-    vars:
-      ## Deploy full hierarchy of containers and configlets into CloudVision “Static Configuration Studio”
-      cv_static_config_manifest:
-        configlets:
-          - name: "Building_A_Banner"
-            file: configlets/Building_A_Banner.cfg
-        containers:
-          - name: ZZZ_AVD_CAMPUS
-              description: "AVD generated Campus Tag Heiarchy"
-              tag_query: "Campus:AVD_CAMPUS"
-              match_policy: "match_all"
-              sub_containers:
-              - name: BUILDING_A
-                  description: "Build A"
-                  tag_query: "Campus-Pod:BUILDING_A"
-                  match_policy: "match_all"
-                  configlets:
-                  - name: "Building_A_Banner"
-                  sub_containers:
-                  - name: IDF1
-                      description: "IDF 1"
-                      tag_query: "Access-Pod:IDF1"
-                      match_policy: "match_all"
-                  - name: IDF2
-                      description: "IDF 2"
-                      tag_query: "Access-Pod:IDF1"
-                      match_policy: "match_all"
-                  - name: IDF3
-                      description: "IDF 3"
-                      tag_query: "Access-Pod:IDF1"
-                      match_policy: "match_all"
+With Campus Tags in place, operators can:
+
+1. Open CloudVision → Campus topology
+2. Navigate to their building → IDF → specific switch
+3. See a front-panel view of the switch
+4. Select a port → apply a port profile via Quick Actions
+5. Execute the change
+
+AVD remains the source of truth for fabric-level config. Operators stay in CloudVision for port-level Day-2 changes. Neither team steps on the other.
+
+---
+
+## Working Lab Repo
+
+The full working lab with `group_vars`, `inventory`, and `playbooks` is in the lab repo:
+
+```bash
+git clone https://github.com/nextgen-network-academy/avd-campus-tags
+cd avd-campus-tags
 ```
 
-AVD performs the following actions:
+Repo structure:
 
-- Uploads configlets into the Configlet Library
-- Creates the Studio container hierarchy
-- Places devices based on tag queries
-- Applies configlets to all matching devices
-
----
-
-## Root Container Ordering Behavior
-
-When deploying or adding new root containers, the `cv_deploy` role places all AVD-managed root containers at the top of the Studio container tree.
-
-**Note**
-This automated behavior may reorder containers that were manually arranged in the UI.
-
----
-
-## Configlet Inheritance Example
-
-This section illustrates how **AVD manages configlets** and how those configlets are inherited by devices through a **Static Configuration Studio container hierarchy**.
-
-The workflow is as follows:
-
-1. AVD references a raw `.cfg` configlet file from the repository.
-2. The configlet is declared in the `configlets` section of the Static Studio manifest.
-3. The configlet is associated with the appropriate container in the manifest hierarchy.
-4. CloudVision applies the configlet to all devices that match the container’s tag query.
+```
+avd-campus-tags/
+├── README.md
+├── group_vars/
+│   ├── CAMPUS_FABRIC.yml      ← fabric variables + generate_cv_tags
+│   └── CAMPUS_SWITCHES.yml    ← device-level variables
+├── inventory/
+│   └── inventory.yml          ← device inventory
+├── playbooks/
+│   ├── build.yml              ← generate EOS configs
+│   └── deploy_campus.yml      ← push to CVaaS + apply tags
+└── docs/
+    └── topology.png           ← campus topology diagram
+```
 
 ---
 
-### AVD Configlet Declaration in the Manifest
+## Related Reading
 
-![AVD Code Configlet Into Manifest](images/cloudvision/campus-avd-configlet.png)
-
-AVD references the raw configuration file and includes it in the manifest so it can be managed by CloudVision.
-
----
-
-### Configlet Deployed to the CloudVision Library
-
-![Configlet Applied Into CV Library](images/cloudvision/campus-configlet-library.png)
-
-During the `cv_deploy` phase, AVD uploads the configlet into the CloudVision Configlet Library.
+- [Day-2 Ops with CloudVision Quick Actions](../netops/index.md) ← coming soon
+- [Static Studio Manifests — zero to deployed](avd-campus-tags.md) ← planned
+- [Arista AVD Documentation](https://avd.arista.com) ↗
+- [Original newsletter article](https://arista-southwest-region.github.io/Newsletter/) ↗
 
 ---
 
-### Configlet Associated with the Studio Container
-
-![Configlet Associated to Container](images/cloudvision/campus-configlet-applied-container.png)
-
-The configlet is attached to a Static Studio container.  
-All devices assigned to this container automatically inherit the configlet.
-
----
-
-## Summary
-
-By combining:
-
-- AVD-generated CloudVision Campus tags
-- Static Studio manifests
-- Tag-based container placement
-
-You gain a scalable, deterministic, and supportable integration between AVD and CloudVision Studios, while maintaining clear ownership boundaries between build-time automation and day-2 operations.
-
-## Day-2 Operations (CloudVision Campus)
-
-This section focuses on **Day-2 operational workflows** using the **CloudVision Campus UI**, with emphasis on how network operators interact with the platform *after* Day-1 provisioning has been completed by AVD.
-
-Unlike Day-1 automation, where AVD is the source of truth, Day-2 operations leverage **CloudVision Studios, Network Hierarchy, and Quick Actions** to safely make operational changes at scale.
-
-- Access Interface Configuration Studio (Quick Actions):  
-  <https://www.arista.io/help/articles/provisioning-studios-built-in-access-interface#access-interface-configuration-studio>
-
----
-
-### Entry Point: Campus Health Overview
-
-For network operators assigned a **Campus profile**, the default landing page after logging into CloudVision is the **Campus Health Overview** dashboard.
-
-This dashboard provides:
-
-- High-level campus health status
-- Visibility into wired and wireless domains
-- Direct navigation into Campus-specific operational workflows
-
-<!-- Image: Campus Health Overview Dashboard -->
-
-![Campus Health Quick Actions](images/day2/campus-health-quickactions-pp.png)
-
-From this view, operators can quickly pivot from monitoring to action without navigating away from the Campus workflow context.
-
----
-
-### Navigating the Network Hierarchy
-
-From the **Campus Health Overview**, operators can navigate to the **Network Hierarchy UI**, which represents the logical campus structure built using **AVD-generated CloudVision Campus tags and containers**.
-
-The Network Hierarchy enables operators to:
-
-- View sites, buildings, floors, and other logical groupings
-- Understand configuration and policy inheritance scopes
-- Target operational changes with precision and confidence
-
-Quick Actions menus are accessible **per container**, directly reflecting the underlying **tag-based hierarchy** created during Day-1 deployment.
-
-Within the Quick Actions workflow, the UI presents a **front-panel view of the switch**, allowing operators to **single-select or multi-select switchports** and assign them to predefined port profiles.
-
-![Campus Network Hierarchy Quick Actions](images/day2/campus-net-ui-quickactions-pp.png)
-
-Because configuration and policies are associated at the container level, hierarchy placement directly determines what devices inherit.
-
----
-
-### Quick Actions: Operational Changes at Scale
-
-Within the Campus workflow, operators can launch **Quick Actions** directly from the Campus dashboards or Network Hierarchy views.
-
-One of the most common Day-2 use cases is **setting or updating switch port profiles**.
-
-Quick Actions allow operators to:
-
-- Select one or more devices or ports
-- Apply predefined port profiles
-- Execute changes without modifying AVD source files
-
-### Example: Applying Switch Port Profiles
-
-Using Quick Actions, an operator can:
-
-1. Select a container, device, or specific interfaces
-2. Choose the appropriate **Switch Port Profile**
-3. Review the proposed change
-4. Execute the action through CloudVision
-
-This workflow ensures:
-
-- Consistency across the campus
-- Reduced operational risk
-- Fast response to Day-2 requirements
-
-<!-- Image: Quick Actions Port Profile Selection -->
-
-![Quick Actions Port Profile](images/day2/campus-quick-actions-port-profile.png)
-
----
-
-### Key Takeaways for Day-2 Operations
-
-- **AVD remains the Day-1 source of truth**
-- **CloudVision enables controlled Day-2 changes**
-- Network Hierarchy and tags define operational scope
-- Quick Actions provide safe, repeatable workflows for operators
-
-This separation allows infrastructure teams to maintain strong automation discipline while empowering operations teams with the flexibility required for daily campus management.
-
----
-
-## About This Repository
-
-This repository contains personal lab work and reference material created to explore hybrid AVD and CloudVision Campus workflows.  
-
-It is not official Arista documentation or a supported design guide.
+!!! note "Questions or issues?"
+    Found a bug in the lab? Have a question about your specific environment?
+    Open an issue on [GitHub](https://github.com/nextgen-network-academy/avd-campus-tags/issues)
+    or connect on [LinkedIn](https://www.linkedin.com/in/nicholas-dambrosio-0381871a/).
