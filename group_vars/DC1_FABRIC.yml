@@ -29,6 +29,7 @@ terminattr_cvaddr: "apiserver.arista.io:443"
 terminattr_cvauth: "token-secure,/tmp/cv-onboarding-token"
 terminattr_cvvrf: MGMT
 terminattr_taillogs: true
+terminattr_extension: "flash:TerminAttr64-1.36.1-1.swix"
 
 # Spine Switches
 l3spine:
