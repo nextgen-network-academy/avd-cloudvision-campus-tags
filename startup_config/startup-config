@@ -1,0 +1,34 @@
+! cEOS-lab startup config — SPINE2
+! mgmt: 192.168.101.14/24 via VRF MGMT
+!
+hostname SPINE2
+!
+! --- Users ---
+username admin privilege 15 role network-admin secret 0 admin
+!
+! --- AAA ---
+aaa authorization exec default local
+!
+! --- Management VRF ---
+vrf instance MGMT
+!
+interface Management0
+   vrf MGMT
+   ip address 192.168.101.14/24
+!
+ip route vrf MGMT 0.0.0.0/0 192.168.101.1
+!
+! --- eAPI (required for Ansible httpapi connection) ---
+management api http-commands
+   protocol https
+   no shutdown
+   !
+   vrf MGMT
+      no shutdown
+!
+! --- SSH ---
+management ssh
+   vrf MGMT
+      no shutdown
+!
+end
