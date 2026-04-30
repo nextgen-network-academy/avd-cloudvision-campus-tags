@@ -16,46 +16,46 @@ topology:
     # Spine nodes
     SPINE1:
       kind: ceos
-      image: ceos64:4.33.0F
+      image: ceos64:4.34.4M
       mgmt-ipv4: 192.168.101.13
     SPINE2:
       kind: ceos
-      image: ceos64:4.33.0F
+      image: ceos64:4.34.4M
       mgmt-ipv4: 192.168.101.14
     # IDF-1
     LEAF1A:
       kind: ceos
-      image: ceos64:4.33.0F
+      image: ceos64:4.34.4M
       mgmt-ipv4: 192.168.101.111
     LEAF1B:
       kind: ceos
-      image: ceos64:4.33.0F
+      image: ceos64:4.34.4M
       mgmt-ipv4: 192.168.101.112
     # IDF-2
     LEAF2A:
       kind: ceos
-      image: ceos64:4.33.0F
+      image: ceos64:4.34.4M
       mgmt-ipv4: 192.168.101.113
     # IDF-3
     LEAF3A:
       kind: ceos
-      image: ceos64:4.33.0F
+      image: ceos64:4.34.4M
       mgmt-ipv4: 192.168.101.114
     LEAF3B:
       kind: ceos
-      image: ceos64:4.33.0F
+      image: ceos64:4.34.4M
       mgmt-ipv4: 192.168.101.115
     LEAF3C:
       kind: ceos
-      image: ceos64:4.33.0F
+      image: ceos64:4.34.4M
       mgmt-ipv4: 192.168.101.116
     LEAF3D:
       kind: ceos
-      image: ceos64:4.33.0F
+      image: ceos64:4.34.4M
       mgmt-ipv4: 192.168.101.117
     LEAF3E:
       kind: ceos
-      image: ceos64:4.33.0F
+      image: ceos64:4.34.4M
       mgmt-ipv4: 192.168.101.118
 #Container switch links
   links:
