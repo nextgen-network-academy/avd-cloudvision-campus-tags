@@ -34,9 +34,9 @@
                       match_policy: "match_all"
                     - name: IDF2
                       description: "IDF 2"
-                      tag_query: "Access-Pod:IDF1"
+                      tag_query: "Access-Pod:IDF2"
                       match_policy: "match_all"
                     - name: IDF3
                       description: "IDF 3"
-                      tag_query: "Access-Pod:IDF1"
+                      tag_query: "Access-Pod:IDF3"
                       match_policy: "match_all"
