@@ -42,7 +42,7 @@ DC1:
       children:
         DC1_LEAFS:
         DC1_SPINES:
-    # DC1_NETWORK_PORTS:
-    #   children:
-    #     DC1_LEAFS:
-    #     DC1_SPINES:
+    DC1_NETWORK_PORTS:
+      children:
+        DC1_LEAFS:
+        DC1_SPINES:
