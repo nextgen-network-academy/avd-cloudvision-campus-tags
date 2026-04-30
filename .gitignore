@@ -1,0 +1,2 @@
+# remove cvp extension build dir from git directory
+cvp_extensions/

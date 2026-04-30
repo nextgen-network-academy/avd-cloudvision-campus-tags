@@ -1,0 +1,42 @@
+---
+- name: Deploy Configurations to Devices Using CloudVision Portal # (1)!
+  hosts: DC1_FABRIC
+  gather_facts: false
+  connection: local
+  tasks:
+    - name: Push Configuration to CVaaS Studio
+      ansible.builtin.import_role:
+        name: arista.avd.cv_deploy
+      vars:
+        cv_server: www.cv-prod-us-central1-c.arista.io
+        cv_token: "{{ lookup('env', 'CVP_PASSWORD') }}"
+        cv_skip_missing_devices: true
+        cv_static_config_manifest:
+          configlets:
+            - name: "Building_A_Banner"
+              file: configlets/Building_A_Banner.cfg
+          containers:
+            - name: ZZZ_AVD_CAMPUS
+              description: "AVD generated Campus Tag Heiarchy"
+              tag_query: "Campus:AVD_CAMPUS"
+              match_policy: "match_all"
+              sub_containers:
+                - name: BUILDING_A
+                  description: "Build A"
+                  tag_query: "Campus-Pod:BUILDING_A"
+                  match_policy: "match_all"
+                  configlets:
+                    - name: "Building_A_Banner"
+                  sub_containers:
+                    - name: IDF1
+                      description: "IDF 1"
+                      tag_query: "Access-Pod:IDF1"
+                      match_policy: "match_all"
+                    - name: IDF2
+                      description: "IDF 2"
+                      tag_query: "Access-Pod:IDF1"
+                      match_policy: "match_all"
+                    - name: IDF3
+                      description: "IDF 3"
+                      tag_query: "Access-Pod:IDF1"
+                      match_policy: "match_all"

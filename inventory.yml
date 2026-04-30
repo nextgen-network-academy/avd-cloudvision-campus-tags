@@ -1,0 +1,48 @@
+---
+# AVD Campus inventory.yml
+DC1:
+  children:
+    DC1_FABRIC:
+      vars:
+        ansible_user: admin
+        ansible_ssh_pass: admin
+        ansible_network_os: eos
+        ansible_connection: network_cli
+        ansible_become: yes
+        ansible_become_method: enable
+        ansible_become_password: admin
+      children:
+        DC1_SPINES:
+          hosts:
+            SPINE1:
+              ansible_host: 192.168.101.13
+              serial_number: 4C56530DDFA096503DE45DA4251BF1B4
+            Custom-hostname-v2:
+              ansible_host: 192.168.101.14
+              serial_number: A3A92F65104E86FE5CD98953DECB81AE
+        DC1_LEAFS:
+          hosts:
+            LEAF1A:
+              ansible_host: 192.168.101.111
+            LEAF1B:
+              ansible_host: 192.168.101.112
+            LEAF2A:
+              ansible_host: 192.168.101.113
+            LEAF3A:
+              ansible_host: 192.168.101.114
+            LEAF3B:
+              ansible_host: 192.168.101.115
+            LEAF3C:
+              ansible_host: 192.168.101.116
+            LEAF3D:
+              ansible_host: 192.168.101.117
+            LEAF3E:
+              ansible_host: 192.168.101.118
+    DC1_NETWORK_SERVICES:
+      children:
+        DC1_LEAFS:
+        DC1_SPINES:
+    # DC1_NETWORK_PORTS:
+    #   children:
+    #     DC1_LEAFS:
+    #     DC1_SPINES:
