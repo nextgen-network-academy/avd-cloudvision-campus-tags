@@ -15,7 +15,7 @@ tenants:
             nodes:
               - node: SPINE1
                 ip_address: 10.1.10.2/23
-              - node: Custom-hostname-v2
+              - node: SPINE2
                 ip_address: 10.1.10.3/23
           - id: 120
             name: 'IDF1-Voice'
@@ -26,7 +26,7 @@ tenants:
             nodes:
               - node: SPINE1
                 ip_address: 10.1.20.2/23
-              - node: Custom-hostname-v2
+              - node: SPINE2
                 ip_address: 10.1.20.3/23
           - id: 130
             name: 'IDF1-Guest'
@@ -37,7 +37,7 @@ tenants:
             nodes:
               - node: SPINE1
                 ip_address: 10.1.30.2/23
-              - node: Custom-hostname-v2
+              - node: SPINE2
                 ip_address: 10.1.30.3/23
           - id: 210
             name: 'IDF2-Data'
@@ -48,7 +48,7 @@ tenants:
             nodes:
               - node: SPINE1
                 ip_address: 10.2.10.2/23
-              - node: Custom-hostname-v2
+              - node: SPINE2
                 ip_address: 10.2.10.3/23
           - id: 220
             name: 'IDF2-Voice'
@@ -59,7 +59,7 @@ tenants:
             nodes:
               - node: SPINE1
                 ip_address: 10.2.20.2/23
-              - node: Custom-hostname-v2
+              - node: SPINE2
                 ip_address: 10.2.20.3/23
           - id: 230
             name: 'IDF2-Guest'
@@ -70,7 +70,7 @@ tenants:
             nodes:
               - node: SPINE1
                 ip_address: 10.2.30.2/23
-              - node: Custom-hostname-v2
+              - node: SPINE2
                 ip_address: 10.2.30.3/23
           - id: 310
             name: 'IDF3-Data'
@@ -81,7 +81,7 @@ tenants:
             nodes:
               - node: SPINE1
                 ip_address: 10.3.10.2/23
-              - node: Custom-hostname-v2
+              - node: SPINE2
                 ip_address: 10.3.10.3/23
           - id: 320
             name: 'IDF3-Voice'
@@ -92,7 +92,7 @@ tenants:
             nodes:
               - node: SPINE1
                 ip_address: 10.3.20.2/23
-              - node: Custom-hostname-v2
+              - node: SPINE2
                 ip_address: 10.3.20.3/23
           - id: 330
             name: 'IDF3-Guest'
@@ -103,5 +103,5 @@ tenants:
             nodes:
               - node: SPINE1
                 ip_address: 10.3.30.2/23
-              - node: Custom-hostname-v2
+              - node: SPINE2
                 ip_address: 10.3.30.3/23

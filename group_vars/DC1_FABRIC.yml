@@ -52,7 +52,7 @@ l3spine:
           id: 1
           mgmt_ip: 192.168.101.13/24
           serial_number: 4C56530DDFA096503DE45DA4251BF1B4
-        - name: Custom-hostname-v2
+        - name: SPINE2
           id: 2
           mgmt_ip: 192.168.101.14/24
           serial_number: A3A92F65104E86FE5CD98953DECB81AE
@@ -87,7 +87,7 @@ l2leaf:
         - name: LEAF1B
           id: 4
           mgmt_ip: 192.168.101.112/24
-          uplink_switches: [Custom-hostname-v2]
+          uplink_switches: [SPINE2]
           uplink_switch_interfaces: [Ethernet3]
     - group: IDF2
       cv_tags_topology_type: "leaf"
@@ -100,14 +100,14 @@ l2leaf:
         - name: LEAF2A
           id: 5
           mgmt_ip: 192.168.101.113/24
-          uplink_switches: [SPINE1, Custom-hostname-v2]
+          uplink_switches: [SPINE1, SPINE2]
           uplink_switch_interfaces: [Ethernet4]
     - group: IDF3_AGG
       cv_tags_topology_type: "leaf"
       campus_access_pod: IDF3
       mlag: true
       mlag_interfaces: [Ethernet3, Ethernet4]
-      uplink_switches: [SPINE1, Custom-hostname-v2]
+      uplink_switches: [SPINE1, SPINE2]
       uplink_interfaces: [Ethernet1, Ethernet2]
       filter:
         tags: [ "310", "320", "330" ]
@@ -168,6 +168,6 @@ core_interfaces:
       interfaces: [ Ethernet52/1, Ethernet1/1 ]
       include_in_underlay_protocol: true
     - ip: [ 10.0.0.5/31, 10.0.0.4/31 ]
-      nodes: [ Custom-hostname-v2, WAN ]
+      nodes: [ SPINE2, WAN ]
       interfaces: [ Ethernet52/1, Ethernet1/1 ]
       include_in_underlay_protocol: true

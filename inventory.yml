@@ -17,7 +17,7 @@ DC1:
             SPINE1:
               ansible_host: 192.168.101.13
               serial_number: 4C56530DDFA096503DE45DA4251BF1B4
-            Custom-hostname-v2:
+            SPINE2:
               ansible_host: 192.168.101.14
               serial_number: A3A92F65104E86FE5CD98953DECB81AE
         DC1_LEAFS:
