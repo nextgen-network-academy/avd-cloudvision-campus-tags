@@ -27,21 +27,10 @@
         commands:
           - "copy installed-extensions boot-extensions"
     
-    # Task to enter bash shell on the cEOS device
-    - name: Enter bash shell on cEOS device
+    - name: Write CVP onboarding token to /tmp/cv-onboarding-token
       eos_command:
         commands:
-          - bash
-        retries: 3  # Retry the command 3 times
-        interval: 10  # Wait for 10 seconds between retries
-    
-    # Task to create the CVP token file and add the token in bash shell
-    - name: Create CVP token file and add the token
-      eos_command:
-        commands:
-          - "echo '{{ lookup('env', 'CVP_DEVICE_TOKEN') }}' > /tmp/cv-onboarding-token"
-        retries: 3  # Retry the command 3 times
-        interval: 10  # Wait for 10 seconds between retries
+          - "bash timeout 30 bash -c 'echo {{ lookup(\"env\", \"CVP_DEVICE_TOKEN\") }} > /tmp/cv-onboarding-token'"
     
     - name: Configure TerminAttr daemon
       arista.eos.eos_command:
