@@ -1,0 +1,52 @@
+---
+- name: Register TerminAttr Extension on cEOS-lab
+  hosts: DC1_FABRIC
+  gather_facts: no
+  become_method: enable
+  vars:
+    ansible_user: admin
+    ansible_ssh_pass: admin
+    ansible_network_os: eos
+    ansible_connection: network_cli
+    ansible_become: yes
+    ansible_become_method: enable
+    ansible_become_password: admin
+  tasks:
+    - name: Copy TerminAttr from Flash to Extension Directory
+      arista.eos.eos_config:
+        lines:
+          - "copy {{ terminattr_extension }} extension:"
+
+    - name: Install TerminAttr extension
+      arista.eos.eos_config:
+        lines:
+          - "extension {{ terminattr_extension }}"
+    
+    - name: Persist installed extensions
+      arista.eos.eos_config:
+        commands:
+          - "copy installed-extensions boot-extensions"
+    
+    - name: Write CVP onboarding token to /tmp/cv-onboarding-token
+      eos_command:
+        commands:
+          - "bash timeout 30 bash -c 'echo {{ lookup(\"env\", \"CVP_DEVICE_TOKEN\") }} > /tmp/cv-onboarding-token'"
+    
+    - name: Configure TerminAttr daemon
+      arista.eos.eos_command:
+        commands:
+          - "Cli"
+          - "enable"
+          - "config"
+          - "daemon TerminAttr"
+          - "shutdown"
+          - "exec /usr/bin/TerminAttr -smashexcludes=ale,flexCounter,hardware,kni,pulse,strata -cvaddr=apiserver.arista.io:443 -cvauth=token-secure,/tmp/cv-onboarding-token -cvvrf=MGMT -taillogs"
+          - "no shutdown"
+      become: true  # You can still use this for privilege escalation if needed
+      register: terminattr_config
+    
+    - name: Save configuration
+      eos_config:
+        save_when: modified
+      when: terminattr_config.changed
+    
